@@ -2,6 +2,7 @@
   "name": "@sero-ai/plugin-starling",
   "version": "0.1.1",
   "description": "Starling Bank dashboard for Sero — view balances, transactions, savings, and spending insights",
+  "type": "module",
   "keywords": [
     "pi-package"
   ],
