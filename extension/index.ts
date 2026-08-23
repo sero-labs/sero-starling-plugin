@@ -15,6 +15,7 @@ import { StringEnum } from '@earendil-works/pi-ai';
 import type { ExtensionAPI } from '@earendil-works/pi-coding-agent';
 import { Text } from '@earendil-works/pi-tui';
 import { Type } from 'typebox';
+import { withStateLock } from '@sero-ai/extension-runtime';
 
 import type { StarlingState } from '../shared/types';
 import { DEFAULT_STATE } from '../shared/types';
@@ -159,7 +160,9 @@ export default function (pi: ExtensionAPI) {
         }
 
         case 'clear': {
-          await writeState(statePath, { ...DEFAULT_STATE });
+          // Write under the shared `<stateFile>.lock` mutex so the reset cannot
+          // interleave with the Sero host writing the same file for the UI (#428).
+          await withStateLock(statePath, () => writeState(statePath, { ...DEFAULT_STATE }));
           return {
             content: [{ type: 'text', text: 'Cleared all Starling Bank data and credentials.' }],
             details: {},
